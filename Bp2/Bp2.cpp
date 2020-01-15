@@ -154,8 +154,8 @@ int getNextEmptyBlockIndex(FILE* pFile);
 bool insertRecordOverflow(FILE* pFile, Record record);
 int changeTheaterOverflow(FILE* pFile, int key);
 FILE* safeFopenOverflow(string fileName);
-void showRecordsDurationOverflow(FILE* pFile, int minduration, int maxduration);
-void showRecordsDuration(FILE* pFile, FILE* ovFile, int minduration, int maxduration);
+void showRecordsDurationOverflow(FILE* pFile, FILE* serialFile, int minduration, int maxduration);
+void showRecordsDuration(FILE* pFile, FILE* ovFile, FILE* serialFile, int minduration, int maxduration);
 
 int transformKey(int key);
 void printRecord(Record record, int header);
@@ -172,22 +172,29 @@ void printContent(FILE* pFile, FILE* ovFile);
 bool changeTheater(FILE* pFile, FILE* ovFile, int key);
 int readBucket(FILE* pFile, Bucket* pBucket, int bucketIndex);
 
+FILE* createSerialFile();
+bool insertRecordSerial(FILE* pFile, Record record);
+void printRecordsFromSerialFile(FILE* pFile);
+
 int menu();
 FILE* safeFopen(string filename);
 
-int main() {
-	//FILE* pFile = safeFopen(DEFAULT_FILENAME), * pInputSerialFile, * pInputTxtFile;
+int main() 
+{
 	FILE* pFile = NULL, * pInputSerialFile, * pInputTxtFile;
 	FILE* ovFile = NULL;
-	
+	FILE* serialFile = NULL;
+
 	string fileName;
 	int option = -1;
 	int key;
 	Record record;
 
-	while (option) {
+	while (option)
+	{
 		option = menu();
-		switch (option) {
+		switch (option) 
+		{
 		case 1:
 			if (pFile != NULL) fclose(pFile);
 			printf("\nUnesite naziv datoteke: ");
@@ -298,7 +305,8 @@ int main() {
 			ifstream csvfile(s.c_str());
 			int n;
 
-			while (getline(csvfile, s, ',')) {
+			while (getline(csvfile, s, ',')) 
+			{
 				Record record;
 
 				s.erase(std::remove(s.begin(), s.end(), '\n'), s.end());
@@ -346,7 +354,9 @@ int main() {
 				cin >> maxduration;
 			} while (maxduration < 0);
 
-			showRecordsDuration(pFile, ovFile, minduration, maxduration);
+			serialFile = createSerialFile();
+			showRecordsDuration(pFile, ovFile, serialFile, minduration, maxduration);
+			printRecordsFromSerialFile(serialFile);
 			break;
 
 		default:
@@ -501,6 +511,82 @@ FILE* createOverflowFile(string fileName)
 	else
 	{
 		cout << "Greska prilikom kreiranja overflow datoteke" << endl;
+		exit(0);
+	}
+	return pFile;
+}
+
+void printRecordsFromSerialFile(FILE* pFile)
+{
+	printHeader();
+	Block* block = new Block();
+	readBlock(pFile, block, 0);
+
+	while (block->record.status != EMPTY)
+	{
+		printRecord(block->record, 0);
+			
+		if (block->nextPosition == -1)
+			return;
+		readBlock(pFile, block, block->nextPosition);
+	}
+}
+
+bool insertRecordSerial(FILE* pFile, Record record)
+{
+	Block* block = new Block();
+	readBlock(pFile, block, 0);
+	while (block->record.status != EMPTY)
+	{
+		if (block->nextPosition == -1)
+			return false;
+
+		readBlock(pFile, block, block->nextPosition);
+	}
+	block->record = record;
+	block->record.status = ACTIVE;
+	saveBlock(pFile, block, block->currentPosition);
+	return true;
+}
+
+FILE* createSerialFile()
+{
+	string fileName;
+	cout << "Unesite ime serijske datoteke: ";
+	cin >> fileName;
+
+	FILE* pFile;
+	pFile = fopen(fileName.c_str(), "rb+");
+
+	if (pFile == NULL)
+	{
+		pFile = fopen(fileName.c_str(), "wb+");
+
+		Block* emptyContent = (Block*)calloc(BLOCKS, sizeof(Block));
+
+		for (int i = 0; i < BLOCKS; i++)
+		{
+			emptyContent[i].previousPosition = i - 1;
+			if (i == 0)
+				emptyContent[i].previousPosition = 0;
+			emptyContent[i].currentPosition = i;
+			emptyContent[i].nextPosition = i + 1;
+
+			if (i == BLOCKS - 1)
+				emptyContent[i].nextPosition = -1;
+		}
+
+		fseek(pFile, 0, SEEK_SET);
+		fwrite(emptyContent, sizeof(Block), BLOCKS, pFile);
+		fflush(pFile);
+		free(emptyContent);
+
+
+		//cout << "Kreirana prazna serijska datoteka." << endl;
+	}
+	else
+	{
+		cout << "Greska prilikom kreiranja serijske datoteke" << endl;
 		exit(0);
 	}
 	return pFile;
@@ -697,9 +783,9 @@ FILE* safeFopenOverflow(string fileName) {
 	return pFile;
 }
 
-void showRecordsDuration(FILE* pFile, FILE* ovFile, int minduration, int maxduration)
+void showRecordsDuration(FILE* pFile, FILE* ovFile, FILE* serialFile, int minduration, int maxduration)
 {
-	printHeader();
+	//printHeader();
 
 	for (int i = 0; i < B; i++)
 	{
@@ -707,15 +793,16 @@ void showRecordsDuration(FILE* pFile, FILE* ovFile, int minduration, int maxdura
 		readBucket(pFile, bucket, i);
 		for (int j = 0; j < BUCKET_SIZE; j++)
 		{
-			if (bucket->records[i].movieProjection.getMovieDuration() >= minduration)
-				if (bucket->records[i].movieProjection.getMovieDuration() <= maxduration)
-					printRecord(bucket->records[i], 0);
+			if (bucket->records[j].movieProjection.getMovieDuration() >= minduration)
+				if (bucket->records[j].movieProjection.getMovieDuration() <= maxduration)
+					//printRecord(bucket->records[i], 0);
+					insertRecordSerial(serialFile, bucket->records[j]);
 		}
 	}
-	showRecordsDurationOverflow(ovFile, minduration, maxduration);
+	showRecordsDurationOverflow(ovFile, serialFile, minduration, maxduration);
 }
 
-void showRecordsDurationOverflow(FILE* pFile, int minduration, int maxduration)
+void showRecordsDurationOverflow(FILE* pFile, FILE* serialFile, int minduration, int maxduration)
 {
 	//printHeader();
 
@@ -727,7 +814,8 @@ void showRecordsDurationOverflow(FILE* pFile, int minduration, int maxduration)
 			Block* block = new Block();
 			readBlock(pFile, block, index);
 			if (block->record.status == ACTIVE && minduration <= block->record.movieProjection.getMovieDuration() && maxduration >= block->record.movieProjection.getMovieDuration())
-				printRecord(block->record, 0);
+				insertRecordSerial(serialFile, block->record);
+				//printRecord(block->record, 0);
 			index = block->nextPosition;
 		}
 	}
