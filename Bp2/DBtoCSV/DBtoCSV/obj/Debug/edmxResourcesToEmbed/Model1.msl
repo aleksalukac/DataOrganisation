@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="BioskopModelStoreContainer" CdmEntityContainer="BioskopEntities">
+    <EntitySetMapping Name="Tabela1">
+      <EntityTypeMapping TypeName="BioskopModel.Tabela1">
+        <MappingFragment StoreEntitySet="Tabela1">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="nazivProj" ColumnName="nazivProj" />
+          <ScalarProperty Name="datumVremeProj" ColumnName="datumVremeProj" />
+          <ScalarProperty Name="sala" ColumnName="sala" />
+          <ScalarProperty Name="trajanje" ColumnName="trajanje" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping>

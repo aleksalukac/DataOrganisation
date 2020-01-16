@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="BioskopModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <!--Errors Found During Generation:
+warning 6002: The table/view 'Bioskop.dbo.Tabela1' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+  <EntityType Name="Tabela1">
+    <Key>
+      <PropertyRef Name="id" />
+      <PropertyRef Name="nazivProj" />
+      <PropertyRef Name="datumVremeProj" />
+      <PropertyRef Name="sala" />
+      <PropertyRef Name="trajanje" />
+    </Key>
+    <Property Name="id" Type="bigint" Nullable="false" />
+    <Property Name="nazivProj" Type="varchar" MaxLength="40" Nullable="false" />
+    <Property Name="datumVremeProj" Type="datetime2" Precision="7" Nullable="false" />
+    <Property Name="sala" Type="nchar" MaxLength="5" Nullable="false" />
+    <Property Name="trajanje" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityContainer Name="BioskopModelStoreContainer">
+    <EntitySet Name="Tabela1" EntityType="Self.Tabela1" store:Type="Tables" store:Schema="dbo">
+      <DefiningQuery>SELECT 
+    [Tabela1].[id] AS [id], 
+    [Tabela1].[nazivProj] AS [nazivProj], 
+    [Tabela1].[datumVremeProj] AS [datumVremeProj], 
+    [Tabela1].[sala] AS [sala], 
+    [Tabela1].[trajanje] AS [trajanje]
+    FROM [dbo].[Tabela1] AS [Tabela1]</DefiningQuery>
+    </EntitySet>
+  </EntityContainer>
+</Schema>

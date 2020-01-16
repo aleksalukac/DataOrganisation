@@ -1,0 +1,11 @@
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\bin\Debug\DBtoCSV.exe.config
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\bin\Debug\DBtoCSV.exe
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\bin\Debug\DBtoCSV.pdb
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\bin\Debug\EntityFramework.dll
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\bin\Debug\EntityFramework.xml
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\obj\Debug\DBtoCSV.csprojAssemblyReference.cache
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\obj\Debug\DBtoCSV.csproj.CopyComplete
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\obj\Debug\DBtoCSV.exe
+C:\Users\Aleksa\source\repos\DBtoCSV\DBtoCSV\obj\Debug\DBtoCSV.pdb
